@@ -63,6 +63,8 @@ func run() error {
 	defer journal.Close()
 
 	log := journal.Log
+
+	log.Info("build", "version", version, "revision", revision)
 	slog.SetDefault(log)
 
 	agentID, err := id.Load(dataDir)
@@ -157,10 +159,14 @@ func beat(
 	}
 
 	msg := pulse.Build(agentID, ready, conf)
+	msg.Version, msg.Revision = version, revision
 	if err := pulse.Publish(nc, msg); err != nil {
 		log.Warn("heartbeat failed", "error", err)
 		return
 	}
+
+	alive()
+
 	// Кадр раз в четыре секунды -- ход работы, а не событие: debug.
 	log.Debug("heartbeat",
 		"hostname", msg.Hostname,

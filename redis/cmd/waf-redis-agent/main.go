@@ -54,6 +54,8 @@ func run() error {
 	defer journal.Close()
 
 	log := journal.Log
+
+	log.Info("build", "version", version, "revision", revision)
 	slog.SetDefault(log)
 
 	agentID, err := id.Load(dataDir)
@@ -124,6 +126,7 @@ func run() error {
 
 func beat(nc *nats.Conn, rdb *redis.Client, agentID, name string, rate *redisinfo.Rate, logIO *flow.Counter, log *slog.Logger) error {
 	msg := pulse.Build(context.Background(), agentID, name, rdb, rate)
+	msg.Version, msg.Revision = version, revision
 
 	// Канал журнала рядом с командами: потери доставки waf.log -- ошибки этой
 	// строки кадра, а не строки в самом журнале.
@@ -135,6 +138,8 @@ func beat(nc *nats.Conn, rdb *redis.Client, agentID, name string, rate *redisinf
 	if err := pulse.Publish(nc, msg); err != nil {
 		return err
 	}
+
+	alive()
 
 	// Кадр раз в четыре секунды -- ход работы, а не событие: debug.
 	log.Debug("heartbeat",

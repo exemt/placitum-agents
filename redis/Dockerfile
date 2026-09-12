@@ -23,7 +23,11 @@ ENV CGO_ENABLED=0
 # Тесты в сборке: образ с красными тестами ставить нельзя.
 RUN go test ./...
 
-RUN go build -trimpath -ldflags="-s -w" -o /out/waf-redis-agent ./cmd/waf-redis-agent
+# Сборка в бинарь: версия и ревизия видны в журнале старта и в кадре
+# присутствия, а не только в метках образа.
+ARG VERSION=dev
+ARG REVISION=unknown
+RUN go build -trimpath -ldflags="-s -w -X main.version=${VERSION} -X main.revision=${REVISION}" -o /out/waf-redis-agent ./cmd/waf-redis-agent
 
 FROM alpine:3.22
 
@@ -53,4 +57,8 @@ ENV WAF_NATS_URL=nats://nats:4222 \
     WAF_DATA_DIR=/var/lib/waf/agent \
     WAF_HEARTBEAT_EVERY=4s
 
+# Жив -- значит шлёт кадры: агент обновляет отметку после каждого кадра
+# присутствия (раз в WAF_HEARTBEAT_EVERY), проверка смотрит на её возраст.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \
+    CMD sh -c 'test $(( $(date +%s) - $(stat -c %Y "$WAF_DATA_DIR/alive") )) -lt 20'
 CMD ["waf-redis-agent"]

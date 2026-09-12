@@ -1,5 +1,5 @@
-github.com/exemt/placitum-shared v0.3.0 h1:dZFDUJ4QaMGlDPq1gpzLN23AiHbVfPy7eIfC0Pc9BDs=
-github.com/exemt/placitum-shared v0.3.0/go.mod h1:ukXYdGHpujuX+PtDOtqQrUBHFJC9RtQFntZDtc7QYVA=
+github.com/exemt/placitum-shared v0.4.0 h1:itEPsyurcynntmp1n1OaNSUN58ZAWWHK9oxbyVCiQyU=
+github.com/exemt/placitum-shared v0.4.0/go.mod h1:ukXYdGHpujuX+PtDOtqQrUBHFJC9RtQFntZDtc7QYVA=
 github.com/klauspost/compress v1.18.5 h1:/h1gH5Ce+VWNLSWqPzOVn6XBO+vJbCNGvjoaGBFW2IE=
 github.com/klauspost/compress v1.18.5/go.mod h1:cwPg85FWrGar70rWktvGQj8/hthj3wpl0PGDogxkrSQ=
 github.com/nats-io/nats.go v1.53.1 h1:Otsq3uLc/kLdjmkNHkXH0jBqwUquwdKFoe3fq6/3/Xo=

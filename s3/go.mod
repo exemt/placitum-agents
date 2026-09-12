@@ -3,7 +3,7 @@ module github.com/exemt/placitum-agents/s3
 go 1.25.0
 
 require (
-	github.com/exemt/placitum-shared v0.3.0
+	github.com/exemt/placitum-shared v0.4.0
 	github.com/minio/madmin-go/v3 v3.0.108
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/nats-io/nats.go v1.53.1
