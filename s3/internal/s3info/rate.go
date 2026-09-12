@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/exemt/placitum-agents/s3/internal/flow"
+	"github.com/exemt/placitum-shared/flow"
 )
 
 // Rate — темп канала `api`: дельта prometheus-счётчиков MinIO между двумя

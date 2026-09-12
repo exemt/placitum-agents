@@ -1,51 +1,37 @@
+/*
+ * Присутствие агента S3 на WAF_STATUS: kind=s3, адрес store.s3.<id>.
+ * Не нода: своего node_id нет. Шапка кадра общая (pulse.Frame из
+ * placitum-shared); своё здесь — снимок хранилища и темп API за его окно.
+ */
+
 package pulse
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/exemt/placitum-agents/s3/internal/flow"
-	"github.com/exemt/placitum-agents/s3/internal/host"
 	"github.com/exemt/placitum-agents/s3/internal/s3info"
+	"github.com/exemt/placitum-shared/flow"
+	shared "github.com/exemt/placitum-shared/pulse"
 )
 
-// Message — кадр присутствия S3. Не нода: своего node_id нет.
 type Message struct {
-	V        int                  `json:"v"`
-	Kind     string               `json:"kind"`
-	ID       string               `json:"id"`
-	Name     string               `json:"name"`
-	Hostname string               `json:"hostname"`
-	Ready    bool                 `json:"ready"`
-	At       string               `json:"at"`
-	Host     host.Snapshot        `json:"host"`
-	S3       s3info.Snapshot      `json:"s3"`
-	WindowS  int                  `json:"window_s,omitempty"`
-	IO       map[string]flow.Flow `json:"io,omitempty"`
+	shared.Frame
+	S3 s3info.Snapshot `json:"s3"`
 }
 
 func Subject(id string) string {
-	return fmt.Sprintf("WAF_STATUS.store.s3.%s", id)
+	return shared.StoreSubject("s3", id)
 }
 
 func Build(ctx context.Context, agentID, name string, probe s3info.Probe, rate *s3info.Rate) Message {
-	snap := host.Collect()
 	store := s3info.Collect(ctx, probe)
 	now := time.Now()
 	msg := Message{
-		V:        1,
-		Kind:     "s3",
-		ID:       agentID,
-		Name:     name,
-		Hostname: snap.Hostname,
-		Ready:    store.OK,
-		At:       now.UTC().Format(time.RFC3339Nano),
-		Host:     snap,
-		S3:       store,
+		Frame: shared.NewFrame("s3", agentID, name, store.OK, nil),
+		S3:    store,
 	}
 	if store.OK && store.HasAPI && rate != nil {
 		api, windowS := rate.Sample(store, now)
@@ -58,9 +44,5 @@ func Build(ctx context.Context, agentID, name string, probe s3info.Probe, rate *
 }
 
 func Publish(nc *nats.Conn, msg Message) error {
-	body, err := json.Marshal(msg)
-	if err != nil {
-		return err
-	}
-	return nc.Publish(Subject(msg.ID), body)
+	return shared.PublishFrame(nc, Subject(msg.ID), msg)
 }

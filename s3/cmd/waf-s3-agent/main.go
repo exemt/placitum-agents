@@ -20,10 +20,10 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/nats-io/nats.go"
 
-	"github.com/exemt/placitum-agents/s3/internal/flow"
 	"github.com/exemt/placitum-agents/s3/internal/id"
 	"github.com/exemt/placitum-agents/s3/internal/pulse"
 	"github.com/exemt/placitum-agents/s3/internal/s3info"
+	"github.com/exemt/placitum-shared/flow"
 	"github.com/exemt/placitum-shared/logkit"
 	"github.com/exemt/placitum-shared/loglevel"
 )

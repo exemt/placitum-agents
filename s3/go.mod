@@ -3,17 +3,15 @@ module github.com/exemt/placitum-agents/s3
 go 1.25.0
 
 require (
-	github.com/exemt/placitum-shared v0.2.0
+	github.com/exemt/placitum-shared v0.3.0
 	github.com/minio/madmin-go/v3 v3.0.108
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/nats-io/nats.go v1.53.1
-	github.com/shirou/gopsutil/v4 v4.25.1
 )
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect

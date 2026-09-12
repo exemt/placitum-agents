@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/exemt/placitum-agents/redis/internal/flow"
+	"github.com/exemt/placitum-shared/flow"
 )
 
 // Rate — темп канала `cmd`: дельта счётчиков INFO stats между двумя опросами,

@@ -17,10 +17,10 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/exemt/placitum-agents/redis/internal/flow"
 	"github.com/exemt/placitum-agents/redis/internal/id"
 	"github.com/exemt/placitum-agents/redis/internal/pulse"
 	"github.com/exemt/placitum-agents/redis/internal/redisinfo"
+	"github.com/exemt/placitum-shared/flow"
 	"github.com/exemt/placitum-shared/logkit"
 	"github.com/exemt/placitum-shared/loglevel"
 )
