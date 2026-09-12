@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/shirou/gopsutil/v4/cpu"
+	gophost "github.com/shirou/gopsutil/v4/host"
 	"github.com/shirou/gopsutil/v4/load"
 	"github.com/shirou/gopsutil/v4/mem"
-	gophost "github.com/shirou/gopsutil/v4/host"
 )
 
 // Snapshot — состояние машины агента, не процесса Redis.

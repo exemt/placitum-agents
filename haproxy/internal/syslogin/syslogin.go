@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/exemt/placitum-agents/haproxy/internal/logkit"
+	"github.com/exemt/placitum-shared/logkit"
 )
 
 const (

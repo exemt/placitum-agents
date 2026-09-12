@@ -19,9 +19,10 @@ import (
 
 	"github.com/exemt/placitum-agents/redis/internal/flow"
 	"github.com/exemt/placitum-agents/redis/internal/id"
-	"github.com/exemt/placitum-agents/redis/internal/logkit"
 	"github.com/exemt/placitum-agents/redis/internal/pulse"
 	"github.com/exemt/placitum-agents/redis/internal/redisinfo"
+	"github.com/exemt/placitum-shared/logkit"
+	"github.com/exemt/placitum-shared/loglevel"
 )
 
 func main() {
@@ -38,13 +39,13 @@ func run() error {
 	dataDir := env("WAF_DATA_DIR", "/var/lib/waf/agent")
 	every := durationEnv("WAF_HEARTBEAT_EVERY", 4*time.Second)
 
-	level, err := logkit.Env("WAF_REDIS_AGENT_LOG", "info")
+	level, err := loglevel.Env("WAF_REDIS_AGENT_LOG", "info")
 	if err != nil {
 		return err
 	}
 
 	/*
-	 * Журнал агента -- в waf.log (internal/logkit), его канал log -- в пульсе
+	 * Журнал агента -- в waf.log (shared/logkit), его канал log -- в пульсе
 	 * рядом с cmd. Сервис один на оба экземпляра: различает их writer, то есть
 	 * имя машины, -- то же, что hostname кадра.
 	 */

@@ -25,9 +25,10 @@ import (
 	"github.com/exemt/placitum-agents/haproxy/internal/apply"
 	"github.com/exemt/placitum-agents/haproxy/internal/desired"
 	"github.com/exemt/placitum-agents/haproxy/internal/id"
-	"github.com/exemt/placitum-agents/haproxy/internal/logkit"
 	"github.com/exemt/placitum-agents/haproxy/internal/pulse"
 	"github.com/exemt/placitum-agents/haproxy/internal/syslogin"
+	"github.com/exemt/placitum-shared/logkit"
+	"github.com/exemt/placitum-shared/loglevel"
 )
 
 func main() {
@@ -49,13 +50,13 @@ func run() error {
 		MasterPid: intEnv("WAF_HAPROXY_MASTER_PID", 0),
 	}
 
-	level, err := logkit.Env("WAF_HAPROXY_AGENT_LOG", "info")
+	level, err := loglevel.Env("WAF_HAPROXY_AGENT_LOG", "info")
 	if err != nil {
 		return err
 	}
 
 	/*
-	 * Журнал агента -- в waf.log (internal/logkit). Через его же приёмник
+	 * Журнал агента -- в waf.log (shared/logkit). Через его же приёмник
 	 * ниже едет и журнал самого haproxy: пачка одна, сервисы у строк разные.
 	 */
 	journal := logkit.Open(logkit.Options{Service: "haproxy-agent", Level: level})

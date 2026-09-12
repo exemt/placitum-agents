@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/exemt/placitum-agents/haproxy/internal/logkit"
+	"github.com/exemt/placitum-shared/logkit"
 )
 
 var at = time.Date(2026, 9, 11, 12, 0, 0, 0, time.UTC)

@@ -22,9 +22,10 @@ import (
 
 	"github.com/exemt/placitum-agents/s3/internal/flow"
 	"github.com/exemt/placitum-agents/s3/internal/id"
-	"github.com/exemt/placitum-agents/s3/internal/logkit"
 	"github.com/exemt/placitum-agents/s3/internal/pulse"
 	"github.com/exemt/placitum-agents/s3/internal/s3info"
+	"github.com/exemt/placitum-shared/logkit"
+	"github.com/exemt/placitum-shared/loglevel"
 )
 
 func main() {
@@ -45,12 +46,12 @@ func run() error {
 	dataDir := env("WAF_DATA_DIR", "/var/lib/waf/agent")
 	every := durationEnv("WAF_HEARTBEAT_EVERY", 4*time.Second)
 
-	level, err := logkit.Env("WAF_S3_AGENT_LOG", "info")
+	level, err := loglevel.Env("WAF_S3_AGENT_LOG", "info")
 	if err != nil {
 		return err
 	}
 
-	// Журнал агента -- в waf.log (internal/logkit), его канал log -- в пульсе
+	// Журнал агента -- в waf.log (shared/logkit), его канал log -- в пульсе
 	// рядом с api.
 	logIO := flow.New()
 	journal := logkit.Open(logkit.Options{Service: "s3-agent", Level: level, IO: logIO})
