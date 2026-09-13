@@ -42,6 +42,7 @@ Postgres haproxy_settings ──рендер──▶ haproxy.cfg ──send─�
 | Секция | Что печатает |
 | --- | --- |
 | Процесс | `maxconn`, `tune.bufsize`, резолвер Docker DNS |
+| Адрес клиента | `option forwardfor` всегда: узел получает `X-Forwarded-For`; верить ему узел должен только от балансировщика — `set_real_ip_from` с его адресами, не `0.0.0.0/0` |
 | Таймауты | `timeout connect/client/server/http-keep-alive/tunnel` |
 | Вход | `bind *:<port>` фронтенда |
 | Кластер | `balance`, `option httpchk`, `http-check expect status`, `check inter` |

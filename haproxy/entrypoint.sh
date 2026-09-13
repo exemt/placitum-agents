@@ -32,6 +32,7 @@ defaults
     option                  httplog
     option                  dontlognull
     option                  http-keep-alive
+    option                  forwardfor
     timeout connect         2s
     timeout client          30s
     timeout server          30s
