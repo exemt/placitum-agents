@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -14,8 +13,6 @@ import (
 
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
-
-	"github.com/exemt/placitum-agents/haproxy/internal/apply"
 )
 
 const (
@@ -151,15 +148,8 @@ func follow(
 
 		applied.set(conf.Rev, conf.SHA256, ApplyFailed)
 
-		if !errors.Is(err, apply.ErrMasterDown) {
-			log.Warn("haproxy conf apply failed",
-				"rev", conf.Rev,
-				"sha256", conf.SHA256,
-				"error", err.Error(),
-			)
-			return
-		}
-
+		// Every failure is tried again: a master still starting, a port another process lets go of
+		// later. A file haproxy rejects for good costs one check per pause.
 		pending, retry = conf, time.After(delay)
 		log.Warn("haproxy conf apply failed",
 			"rev", conf.Rev,
