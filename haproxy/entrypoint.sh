@@ -1,10 +1,11 @@
 #!/bin/sh
 # haproxy starts first on a bootstrap configuration, then the agent: the agent reloads the master
-# with SIGUSR2, and there is nothing to reload before the master runs.
+# through its CLI, and there is nothing to reload before the master runs.
 set -e
 
 CFG="${WAF_HAPROXY_CFG:-/usr/local/etc/haproxy/haproxy.cfg}"
 PIDFILE="${WAF_HAPROXY_PIDFILE:-/var/run/waf/haproxy.pid}"
+MASTER_SOCK="${WAF_HAPROXY_MASTER_SOCK:-/var/run/waf/master.sock}"
 
 # The bootstrap configuration lives until the first generation from the controller.
 if [ ! -f "$CFG" ]; then
@@ -55,10 +56,11 @@ listen stats
 EOF
 fi
 
-# -W: master-worker mode, required for reload on SIGUSR2. A pidfile from the previous start
-# survives a container restart and would point the agent at a stranger's pid.
+# -W: master-worker mode. -S: the master CLI; the agent reloads through it and gets back whether
+# the new configuration loaded. A pidfile from the previous start survives a container restart and
+# would point the agent at a stranger's pid.
 rm -f "$PIDFILE"
-haproxy -W -f "$CFG" -p "$PIDFILE" &
+haproxy -W -S "$MASTER_SOCK,mode,600" -f "$CFG" -p "$PIDFILE" &
 
 export WAF_HAPROXY_MASTER_PID=$!
 

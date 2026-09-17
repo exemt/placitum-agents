@@ -45,6 +45,7 @@ ENV WAF_NATS_URL=nats://nats:4222 \
     WAF_HAPROXY_BIN=haproxy \
     WAF_HAPROXY_CFG=/usr/local/etc/haproxy/haproxy.cfg \
     WAF_HAPROXY_PIDFILE=/var/run/waf/haproxy.pid \
+    WAF_HAPROXY_MASTER_SOCK=/var/run/waf/master.sock \
     WAF_HEARTBEAT_EVERY=4s
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \

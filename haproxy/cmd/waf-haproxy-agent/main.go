@@ -34,10 +34,11 @@ func run() error {
 	every := durationEnv("WAF_HEARTBEAT_EVERY", 4*time.Second)
 
 	applyCfg := apply.Config{
-		Bin:       env("WAF_HAPROXY_BIN", "haproxy"),
-		CfgPath:   env("WAF_HAPROXY_CFG", "/usr/local/etc/haproxy/haproxy.cfg"),
-		PidFile:   env("WAF_HAPROXY_PIDFILE", "/var/run/waf/haproxy.pid"),
-		MasterPid: intEnv("WAF_HAPROXY_MASTER_PID", 0),
+		Bin:        env("WAF_HAPROXY_BIN", "haproxy"),
+		CfgPath:    env("WAF_HAPROXY_CFG", "/usr/local/etc/haproxy/haproxy.cfg"),
+		PidFile:    env("WAF_HAPROXY_PIDFILE", "/var/run/waf/haproxy.pid"),
+		MasterPid:  intEnv("WAF_HAPROXY_MASTER_PID", 0),
+		MasterSock: env("WAF_HAPROXY_MASTER_SOCK", "/var/run/waf/master.sock"),
 	}
 
 	level, err := loglevel.Env("WAF_HAPROXY_AGENT_LOG", "info")
@@ -83,9 +84,15 @@ func run() error {
 	stopLog := serveLogSock(journal, log)
 	defer stopLog()
 
-	applied, err := desired.Watch(ctx, nc, func(conf *desired.Conf) error {
-		return apply.Apply(ctx, applyCfg, conf.Cfg)
-	}, log)
+	applied, err := desired.Watch(ctx, nc,
+		func(conf *desired.Conf) error {
+			return apply.Apply(ctx, applyCfg, conf.Cfg)
+		},
+		func(conf *desired.Conf) bool {
+			return apply.Running(ctx, applyCfg, conf.Cfg)
+		},
+		log,
+	)
 	if err != nil {
 		return fmt.Errorf("desired watch: %w", err)
 	}
@@ -97,6 +104,7 @@ func run() error {
 		"cfg", applyCfg.CfgPath,
 		"pidfile", applyCfg.PidFile,
 		"master_pid", applyCfg.MasterPid,
+		"master_sock", applyCfg.MasterSock,
 		"kv_key", desired.ConfKey,
 		"every", every.String(),
 	)

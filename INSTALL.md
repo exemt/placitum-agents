@@ -67,20 +67,29 @@ metrics APIs; plain S3 without them gets only the bucket check.
 
 Not a monitor but a node: haproxy and the agent in one container. The controller publishes a
 rendered `haproxy.cfg` in the `policy/haproxy-conf` KV document; the agent checks its hash, runs
-`haproxy -c`, swaps the file and sends `SIGUSR2` to the master.
+`haproxy -c`, swaps the file and reloads haproxy through the master CLI.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `WAF_NATS_URL` | `nats://127.0.0.1:4222`; `nats://nats:4222` in the image | bus: configuration and presence frame |
 | `WAF_HAPROXY_BIN` | `haproxy` | binary that checks and runs the configuration |
 | `WAF_HAPROXY_CFG` | `/usr/local/etc/haproxy/haproxy.cfg` | where the agent writes the configuration |
-| `WAF_HAPROXY_PIDFILE` | `/var/run/waf/haproxy.pid` | master pid for the signal |
-| `WAF_DATA_DIR` | `/var/lib/waf/agent` | state: the applied revision |
+| `WAF_HAPROXY_MASTER_SOCK` | `/var/run/waf/master.sock` | master CLI socket, haproxy's `-S` |
+| `WAF_HAPROXY_PIDFILE` | `/var/run/waf/haproxy.pid` | master pid: whether haproxy is alive |
+| `WAF_DATA_DIR` | `/var/lib/waf/agent` | agent state: the `agent.id` file |
 | `WAF_HAPROXY_AGENT_LOG` | `info` | log level |
 
 The start order is reversed: haproxy comes up first with a bootstrap configuration, then the agent,
-because there is nothing to reload before the master runs. A failed `haproxy -c` leaves the live
-file untouched and reports `apply_failed` in the frame.
+because there is nothing to reload before the master runs. Outside the image, start haproxy the same
+way: `-W`, `-S` on `WAF_HAPROXY_MASTER_SOCK` and `-p` on `WAF_HAPROXY_PIDFILE`.
+
+The frame says `ok` only after the master confirms that the new worker started. A failed
+`haproxy -c` leaves the live file untouched. A file that passes the check but does not load, for
+example because its port is taken, stays in place, and the old worker keeps serving. Both cases
+report `apply_failed`, and the agent log shows the haproxy alerts.
+
+After a confirmed reload the agent writes the hash of the file to `haproxy.cfg.loaded` next to it.
+If haproxy already runs the desired revision when the agent restarts, the agent does not reload it.
 
 ## Checking
 
@@ -102,3 +111,6 @@ configuration revision.
   the archive fails on the first object written to a missing bucket.
 - **The haproxy agent is not a sidecar.** It cannot move to a separate container: the configuration
   check needs the binary that serves traffic.
+- **A configuration that failed to load stays in the live file.** If haproxy restarts before a good
+  revision arrives, it starts from that file and fails the same way. Fix the cause, for example free
+  the port, and restart the container: the agent reloads haproxy and confirms the file.

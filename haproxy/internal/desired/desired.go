@@ -93,6 +93,7 @@ func Watch(
 	ctx context.Context,
 	nc *nats.Conn,
 	applyConf func(*Conf) error,
+	running func(*Conf) bool,
 	log *slog.Logger,
 ) (*Applied, error) {
 	applied := &Applied{}
@@ -117,7 +118,7 @@ func Watch(
 
 	go func() {
 		defer watcher.Stop()
-		follow(ctx, watcher.Updates(), applyConf, applied, retryPace, log)
+		follow(ctx, watcher.Updates(), applyConf, running, applied, retryPace, log)
 	}()
 
 	return applied, nil
@@ -127,6 +128,7 @@ func follow(
 	ctx context.Context,
 	updates <-chan jetstream.KeyValueEntry,
 	applyConf func(*Conf) error,
+	running func(*Conf) bool,
 	applied *Applied,
 	pace backoff,
 	log *slog.Logger,
@@ -195,6 +197,13 @@ func follow(
 
 			rev, hash, _ := applied.Snapshot()
 			if rev == conf.Rev && hash == conf.SHA256 {
+				continue
+			}
+
+			// After an agent restart haproxy may already run the revision: no reload for it.
+			if rev == 0 && running(conf) {
+				applied.set(conf.Rev, conf.SHA256, ApplyOK)
+				log.Info("haproxy conf already running", "rev", conf.Rev, "sha256", conf.SHA256)
 				continue
 			}
 
