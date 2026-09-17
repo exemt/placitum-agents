@@ -86,7 +86,9 @@ way: `-W`, `-S` on `WAF_HAPROXY_MASTER_SOCK` and `-p` on `WAF_HAPROXY_PIDFILE`.
 The frame says `ok` only after the master confirms that the new worker started. A failed
 `haproxy -c` leaves the live file untouched. A file that passes the check but does not load, for
 example because its port is taken, stays in place, and the old worker keeps serving. Both cases
-report `apply_failed`, and the agent log shows the haproxy alerts.
+report `apply_failed`, and the agent log shows the haproxy alerts. The agent tries the revision again
+after a second and then after a pause that doubles up to 30 seconds, until it loads or a newer
+revision arrives: a port another process lets go of does not need a new publish.
 
 After a confirmed reload the agent writes the hash of the file to `haproxy.cfg.loaded` next to it.
 If haproxy already runs the desired revision when the agent restarts, the agent does not reload it.
