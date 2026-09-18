@@ -7,7 +7,7 @@ and S3 agents; the haproxy node is not part of the installation yet.
 
 ## redis: instance monitor
 
-One agent per Redis instance. A standard installation has two, the exchange and the internal
+One agent per Redis instance. A standard installation has two, the buffer and the internal
 instance, and the agents differ only in address and name; the panel status page tells them apart by
 name.
 
