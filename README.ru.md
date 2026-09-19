@@ -43,5 +43,10 @@ docker buildx build -t placitum/agents-redis "https://github.com/exemt/placitum-
 
 ## Лицензия
 
-[Placitum License Agreement](LICENSE.md). Перевод на русский лежит в [LICENSE.ru.md](LICENSE.ru.md),
-юридическую силу имеет английский текст.
+[Apache License 2.0](LICENSE), уведомление об авторстве — в [NOTICE](NOTICE). Репозиторий входит в
+открытое ядро Placitum. Инспекторы лицензируются отдельно: в репозитории каждого инспектора лежит
+Placitum License Agreement. Выпуски, сделанные до этой смены, выходили на условиях Placitum License
+Agreement 1.1.
+
+Агент s3 линкует `madmin-go` под AGPL-3.0, поэтому его собранный образ целиком идёт под AGPL-3.0.
+Исходный код в этом репозитории остаётся под Apache 2.0.

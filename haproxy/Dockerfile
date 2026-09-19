@@ -25,7 +25,7 @@ ARG REVISION=unknown
 LABEL org.opencontainers.image.title="placitum/agents-haproxy" \
       org.opencontainers.image.description="Placitum HAProxy node: balancer with controller-managed configuration" \
       org.opencontainers.image.source="https://github.com/exemt/placitum-agents" \
-      org.opencontainers.image.licenses="LicenseRef-Placitum" \
+      org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}"
 
