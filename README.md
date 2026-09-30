@@ -15,7 +15,7 @@ The first two only observe: they keep no state and do not touch traffic, so losi
 store and the installation as they are. The third is a balancer with managed configuration. Its
 agent lives on the node itself, because `haproxy -c` must check the configuration with the same
 binary that serves traffic. All three share one contract, the presence frame on `WAF_STATUS`, and
-usually change together, so they live in one repository; a build context can be a directory.
+usually change together, so they live in one repository.
 
 ## Build
 
